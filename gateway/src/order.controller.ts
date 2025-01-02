@@ -32,8 +32,6 @@ export class OrderController {
       );
       return response;
     } catch (error) {
-      console.error('rrror in Gateway:', error.message);
-
       throw new InternalServerErrorException('Internal server error');
     }
   }

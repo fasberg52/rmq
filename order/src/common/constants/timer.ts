@@ -1,0 +1,1 @@
+export const TIMER_CONSTANT = 1000000

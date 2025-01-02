@@ -6,6 +6,8 @@ import { OrderStatusEnum } from '../enums/order.enum';
 import { GetAllOrderDto } from '../dtos/get-all-order.dto';
 import { FindManyOptions, FindOptionsWhere } from 'typeorm';
 import { applySortingToFindOptions } from 'src/common/factory/sort';
+import { TIMER_CONSTANT } from 'src/common/constants/timer';
+import { SymbolsEnum } from '../enums/symbols.enum';
 
 @Injectable()
 export class OrderService {
@@ -22,10 +24,9 @@ export class OrderService {
   }
 
   private async updatePrices() {
-    this.btcPrice = await this.redisService.getPrice('BTC_USDT');
-    this.ethPrice = await this.redisService.getPrice('ETH_USDT');
-    console.log('BTC Price:', this.btcPrice);
-    setTimeout(() => this.updatePrices(), 1000000);
+    this.btcPrice = await this.redisService.getPrice(SymbolsEnum.BTC_USDT);
+    this.ethPrice = await this.redisService.getPrice(SymbolsEnum.ETH_USDT);
+    setTimeout(() => this.updatePrices(), TIMER_CONSTANT as number);
   }
 
   async createOrder() {
@@ -33,12 +34,12 @@ export class OrderService {
       const btcAmount = this.getRandomAmount();
       const ethAmount = this.getRandomAmount();
       const btcOrder = this.createOrderEntity(
-        'BTC_USDT',
+        SymbolsEnum.BTC_USDT,
         this.btcPrice,
         btcAmount,
       );
       const ethOrder = this.createOrderEntity(
-        'ETH_USDT',
+        SymbolsEnum.ETH_USDT,
         this.ethPrice,
         ethAmount,
       );
@@ -67,7 +68,7 @@ export class OrderService {
   }
 
   private async startOrderCreation() {
-    setInterval(() => this.createOrder(), 1000000);
+    setInterval(() => this.createOrder(), TIMER_CONSTANT as number);
   }
 
   private async startOrderProcessing() {
@@ -85,7 +86,7 @@ export class OrderService {
           await this.orderRepository.save(order);
         }
       }
-    }, 1000000);
+    }, TIMER_CONSTANT as number);
   }
 
   async getOrderById(id: number) {
